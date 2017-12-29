@@ -1,0 +1,47 @@
+group 'com.chen'
+version '2.0.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'java'
+
+repositories {
+    maven { url "http://nexus.chen.com/nexus/content/groups/public/" }
+}
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+compileJava {
+    options.encoding = 'utf-8'
+    options.define compilerArgs: [
+            '-source', sourceCompatibility,
+            '-target', targetCompatibility
+    ]
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+}
+
+/**
+ * 插件配置
+ */
+buildscript {
+    repositories {
+        maven { url "http://nexus.chen.com/nexus/content/groups/public/" }
+    }
+    configurations.all {
+        resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
+}
+
+ext.uploadRepoUrl = 'http://nexus.chen.com/nexus/content/repositories/snapshots/'
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: uploadRepoUrl) {
+            authentication(userName: "admin", password: "admin123")
+        }
+    }
+}
